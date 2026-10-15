@@ -1,0 +1,80 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Formly</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      width: 360px;
+      margin: 0;
+      padding: 16px;
+      font: 13px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif;
+      color: #1f2937;
+      background: #f3f7ff;
+    }
+    h1 { margin: 0 0 2px; font-size: 26px; color: #1a73e8; letter-spacing: -0.5px; }
+    .tag { margin: 0 0 14px; color: #4b5563; }
+    label { display: block; font-weight: 600; margin: 12px 0 4px; }
+    .hint { font-weight: 400; color: #6b7280; }
+    input, select, textarea {
+      width: 100%;
+      padding: 8px 10px;
+      border: 1px solid #c9d6f2;
+      border-radius: 8px;
+      font: inherit;
+      background: #fff;
+    }
+    textarea { height: 170px; resize: vertical; }
+    .row { display: flex; gap: 8px; margin-top: 14px; }
+    button {
+      flex: 1;
+      padding: 9px 10px;
+      border: none;
+      border-radius: 8px;
+      font: 600 13px system-ui, sans-serif;
+      cursor: pointer;
+    }
+    .primary { background: #1a73e8; color: #fff; }
+    .primary:hover { background: #1557b0; }
+    .ghost { background: #dde7fb; color: #1a3e8f; }
+    #fill { width: 100%; margin-top: 10px; padding: 11px; font-size: 14px; }
+    #status { min-height: 18px; margin-top: 10px; color: #374151; }
+    .small { margin-top: 10px; color: #6b7280; font-size: 12px; }
+  </style>
+</head>
+<body>
+  <h1>Formly</h1>
+  <p class="tag">Fill in any application form in seconds.</p>
+
+  <label for="apiKey">API key <span class="hint">(stays on this computer)</span></label>
+  <input id="apiKey" type="password" placeholder="sk-ant-..." autocomplete="off" />
+
+  <label for="model">AI model</label>
+  <select id="model">
+    <option value="claude-haiku-5-5">Haiku 5.5 (cheapest, fastest)</option>
+    <option value="claude-sonnet-5-5">Sonnet 5.5 (better writing)</option>
+    <option value="claude-opus-5-5">Opus 5.5 (best, most expensive)</option>
+  </select>
+
+  <label for="profile">Your profile <span class="hint">(paste resume, LinkedIn, projects)</span></label>
+  <textarea id="profile" placeholder="Name: ...
+Email: ...
+School & year: ...
+Phone: ...
+Projects: ...
+Experience: ...
+Why I like building things: ..."></textarea>
+
+  <div class="row">
+    <button id="save" class="primary">Save</button>
+    <button id="test" class="ghost">Test key</button>
+  </div>
+
+  <button id="fill" class="primary">✨ Fill this page now</button>
+  <div id="status"></div>
+  <p class="small">Formly never presses Submit. You always check and submit.</p>
+
+  <script src="popup.js"></script>
+</body>
+</html>

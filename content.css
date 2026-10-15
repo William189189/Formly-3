@@ -1,0 +1,44 @@
+#formly-fab {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  z-index: 2147483647;
+  background: #1a73e8;
+  color: #fff;
+  border: none;
+  border-radius: 999px;
+  padding: 12px 18px;
+  font: 600 14px/1.2 system-ui, -apple-system, "Segoe UI", sans-serif;
+  box-shadow: 0 6px 20px rgba(26, 115, 232, 0.35);
+  cursor: pointer;
+}
+#formly-fab:hover { background: #1557b0; }
+#formly-fab[disabled] { opacity: 0.85; cursor: progress; }
+
+#formly-toast {
+  position: fixed;
+  right: 20px;
+  bottom: 76px;
+  z-index: 2147483647;
+  max-width: 320px;
+  background: #fff;
+  color: #1f2937;
+  border: 1px solid #d0dbf5;
+  border-radius: 12px;
+  padding: 12px 14px;
+  font: 14px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+/* blue = Formly filled this in */
+.formly-filled {
+  outline: 2px solid #1a73e8 !important;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+/* orange = Formly didn't know, please fill it yourself */
+.formly-empty {
+  outline: 2px dashed #f59e0b !important;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
