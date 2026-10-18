@@ -1,13 +1,17 @@
 {
   "manifest_version": 3,
   "name": "Formly",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Fill in any application form in seconds.",
   "permissions": ["storage"],
-  "host_permissions": ["https://api.anthropic.com/*"],
+  "host_permissions": ["https://api.apiyi.com/*"],
   "action": {
     "default_title": "Formly",
     "default_popup": "popup.html"
+  },
+  "options_ui": {
+    "page": "profile.html",
+    "open_in_tab": true
   },
   "background": {
     "service_worker": "background.js"

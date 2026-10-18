@@ -1,0 +1,201 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>My Formly Profile</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; font: 14px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; color: #1f2937; background: #f3f7ff; }
+    .wrap { max-width: 960px; margin: 0 auto; padding: 24px 16px 40px; }
+    header h1 { margin: 0; font-size: 30px; color: #1a73e8; letter-spacing: -0.6px; }
+    header p { margin: 2px 0 16px; color: #6b7280; }
+
+    nav { display: flex; gap: 6px; margin-bottom: 18px; flex-wrap: wrap; }
+    nav button { border: 1px solid #dbe3f4; background: #fff; color: #1f2937; padding: 8px 16px; border-radius: 999px; font: 600 13px system-ui, sans-serif; cursor: pointer; }
+    nav button.active { background: #1a73e8; border-color: #1a73e8; color: #fff; }
+
+    fieldset, .card { border: 1px solid #dbe3f4; border-radius: 12px; background: #fff; padding: 12px 16px 16px; margin: 0 0 14px; }
+    legend { font-weight: 700; padding: 0 6px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 10px 14px; }
+    .wide { grid-column: 1 / -1; }
+    label span { display: block; font-weight: 600; font-size: 12.5px; margin-bottom: 3px; color: #374151; }
+    input, textarea {
+      width: 100%; padding: 8px 10px; border: 1px solid #c9d6f2; border-radius: 8px;
+      font: inherit; background: #fff; color: #1f2937;
+    }
+    textarea { resize: vertical; }
+    .lead { color: #6b7280; margin: 0 0 14px; }
+    /* yellow = filled in by AI from your documents, please check */
+    .suggested { border-color: #eab308 !important; background: #fffbea !important; }
+
+    .bar { position: sticky; bottom: 0; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; padding: 12px 0 4px; background: linear-gradient(transparent, #f3f7ff 35%); }
+    .btn { border: none; border-radius: 8px; padding: 10px 18px; font: 600 14px system-ui, sans-serif; cursor: pointer; }
+    .btn:disabled { opacity: 0.7; cursor: progress; }
+    .primary { background: #1a73e8; color: #fff; }
+    .primary:hover { background: #1557b0; }
+    .ghost { background: #dde7fb; color: #1a3e8f; }
+    .danger { background: #fde8e8; color: #b42318; padding: 6px 12px; font-size: 12.5px; }
+    .msg { color: #374151; }
+
+    .chips { display: flex; gap: 6px; flex-wrap: wrap; margin: 8px 0 10px; }
+    .chip { border: 1px solid #dbe3f4; background: #f8faff; border-radius: 999px; padding: 3px 10px; font-size: 12px; cursor: pointer; }
+    .doc { display: flex; justify-content: space-between; gap: 12px; align-items: flex-start; }
+    .doc h3 { margin: 0; font-size: 15px; }
+    .meta { color: #6b7280; font-size: 12px; }
+    details summary { cursor: pointer; color: #1a73e8; font-size: 12.5px; margin-top: 4px; }
+    details pre { white-space: pre-wrap; font: 12.5px/1.5 system-ui, sans-serif; background: #f8faff; border-radius: 8px; padding: 10px; max-height: 260px; overflow: auto; }
+    .empty { color: #6b7280; font-style: italic; }
+    .add-box { margin-top: 10px; border: 1px dashed #9db8ee; background: #f8faff; color: #1a3e8f; border-radius: 8px; padding: 5px 12px; font: 600 12.5px system-ui, sans-serif; cursor: pointer; }
+    .add-box:hover { background: #eef4ff; }
+    .x { border: none; background: none; color: #b42318; font-size: 15px; line-height: 1; cursor: pointer; padding: 0 2px; }
+    .steps { margin: 6px 0 10px; padding-left: 20px; }
+
+    /* Formly's own pop-up box */
+    dialog#modal { border: none; border-radius: 14px; padding: 22px; width: min(440px, 92vw); box-shadow: 0 20px 60px rgba(17, 24, 39, 0.25); color: #1f2937; }
+    dialog#modal::backdrop { background: rgba(17, 24, 39, 0.45); }
+    dialog#modal h3 { margin: 0 0 6px; font-size: 18px; color: #1a73e8; }
+    dialog#modal p { margin: 0 0 12px; }
+    dialog#modal label { display: block; margin-bottom: 10px; }
+    label span span { display: inline; font-weight: 400; }
+    .modal-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 14px; }
+    .danger-strong { background: #d92d20; color: #fff; }
+    nav .count { background: #7c3aed; color: #fff; border-radius: 999px; padding: 0 7px; margin-left: 4px; font-size: 11px; }
+    .learned-card { border-color: #c9b2f5; background: #faf7ff; }
+    .fact { display: grid; grid-template-columns: 1fr 1.4fr auto; gap: 10px; align-items: end; margin-top: 8px; }
+    .fact-actions { display: flex; gap: 6px; }
+    .btn.small { padding: 8px 12px; font-size: 13px; }
+    .where { margin-top: 6px; }
+    .switch-row { display: flex; justify-content: space-between; align-items: center; gap: 16px; }
+    .switch-row input { width: 18px; height: 18px; flex: none; }
+    @media (max-width: 640px) { .fact { grid-template-columns: 1fr; } }
+    .learned-tag { display: inline; background: #f3ecff; color: #6d28d9; border-radius: 999px; padding: 0 6px; font-size: 11px; font-weight: 600; }
+    .new-box { box-shadow: 0 0 0 4px rgba(26, 115, 232, 0.35); transition: box-shadow 0.3s; }
+    .steps li { margin-bottom: 3px; }
+    .drop { display: block; text-align: center; border: 2px dashed #9db8ee; border-radius: 12px; background: #fff; padding: 28px 16px; cursor: pointer; }
+    .drop:hover, .drop.over { background: #eef4ff; border-color: #1a73e8; }
+    .drop-icon { font-size: 30px; }
+    details.card > summary { cursor: pointer; font-weight: 600; color: #1a3e8f; }
+    details.card[open] > summary { margin-bottom: 10px; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>My Formly</h1>
+      <p>Everything Formly knows about you. Stored only on this computer.</p>
+    </header>
+
+    <nav>
+      <button data-tab="profile">👤 My Profile</button>
+      <button data-tab="documents">📄 Documents</button>
+      <button data-tab="settings">⚙️ Settings</button>
+    </nav>
+
+    <!-- ===== MY PROFILE TAB ===== -->
+    <section id="tab-profile">
+      <p class="lead">Your basic details. Tip: add your resume in 📄 Documents, then press "✨ Fill from my documents".</p>
+      <!-- profile.js builds the boxes here -->
+      <form id="profileForm"></form>
+      <div class="bar">
+        <button class="btn primary" id="saveProfile">Save profile</button>
+        <button class="btn ghost" id="extract">✨ Fill from my documents</button>
+        <span class="msg" id="profileMsg"></span>
+      </div>
+    </section>
+
+    <!-- ===== DOCUMENTS TAB ===== -->
+    <section id="tab-documents" hidden>
+      <p class="lead">Your resume, LinkedIn "About", personal statements and project write-ups. Formly searches these to write long answers like "Why do you want to join?".</p>
+
+      <!-- Helper: how to add your LinkedIn -->
+      <details class="card">
+        <summary>🔗 Add your LinkedIn profile</summary>
+        <p class="meta" style="margin-top:0">LinkedIn doesn't let other apps read your profile, but it can save it as a PDF for you:</p>
+        <ol class="steps">
+          <li>Click the button below to open your LinkedIn profile.</li>
+          <li>Under your name, click <b>Resources</b> (or <b>More</b>), then <b>Save to PDF</b>.</li>
+          <li>Come back here and upload that PDF in the box below.</li>
+        </ol>
+        <a class="btn ghost" href="https://www.linkedin.com/in/me/" target="_blank" style="display:inline-block;text-decoration:none">Open my LinkedIn profile ↗</a>
+        <p class="meta">Also paste your profile link in 👤 My Profile → Links → LinkedIn URL, so Formly can put it in forms.</p>
+      </details>
+
+      <!-- Main way: upload files -->
+      <label class="drop" id="drop">
+        <input id="docFile" type="file" accept=".pdf,.docx,.txt,.md" multiple hidden />
+        <div class="drop-icon">📂</div>
+        <b>Click to upload, or drag files here</b>
+        <div class="meta">PDF, Word (.docx) or text files · you can pick several at once</div>
+      </label>
+      <p class="msg" id="docMsg"></p>
+
+      <!-- Other way: paste text -->
+      <details class="card">
+        <summary>✏️ Or paste text instead</summary>
+        <label><span>Title</span><input id="docTitle" type="text" placeholder="e.g. LinkedIn About" /></label>
+        <div class="chips" id="docChips"></div>
+        <label><span>Text</span><textarea id="docText" rows="8" placeholder="Paste the text here"></textarea></label>
+        <div class="bar" style="position:static;background:none">
+          <button class="btn primary" id="addDoc">Add document</button>
+        </div>
+      </details>
+
+      <p class="meta">Don't upload files with passwords, NRIC or bank details. Formly sends parts of your documents to the AI when filling forms.</p>
+      <div id="docList"></div>
+    </section>
+
+    <!-- ===== SETTINGS TAB ===== -->
+    <section id="tab-settings" hidden>
+      <div class="card">
+        <div class="grid">
+          <label class="wide">
+            <span>API key (stays on this computer)</span>
+            <input id="apiKey" type="password" placeholder="sk-..." autocomplete="off" />
+          </label>
+          <label>
+            <span>AI model</span>
+            <input id="model" type="text" list="models" />
+          </label>
+        </div>
+        <datalist id="models">
+          <option value="claude-haiku-4-5-20251001"></option>
+          <option value="gpt-4o-mini"></option>
+          <option value="gpt-5-mini"></option>
+        </datalist>
+        <div class="bar" style="position:static;background:none">
+          <button class="btn primary" id="saveSettings">Save settings</button>
+          <button class="btn ghost" id="testKey">Test key</button>
+          <span class="msg" id="settingsMsg"></span>
+        </div>
+      </div>
+      <div class="card switch-row">
+        <label for="autoLearn">🧠 When I press Submit on a form Formly filled, save new things I typed to my profile</label>
+        <input type="checkbox" id="autoLearn" />
+      </div>
+    </section>
+  </div>
+
+  <!-- Formly's own pop-up box (used for "+ Add a box" and "Delete?") -->
+  <dialog id="modal">
+    <form id="modalForm">
+      <h3 id="modalTitle"></h3>
+      <p id="modalText" class="meta"></p>
+      <div id="modalFields">
+        <label><span>Box name</span><input id="modalName" type="text" placeholder="e.g. Matric number" autocomplete="off" /></label>
+        <div class="chips" id="modalIdeas"></div>
+        <label><span>What to put in it <span class="meta">(you can fill this later)</span></span><input id="modalValue" type="text" autocomplete="off" /></label>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn ghost" id="modalCancel">Cancel</button>
+        <button type="submit" class="btn primary" id="modalOk">OK</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Tools that read PDF and Word files (they live in the lib folder) -->
+  <script src="lib/pdf.min.js"></script>
+  <script src="lib/mammoth.browser.min.js"></script>
+  <script src="profile.js"></script>
+</body>
+</html>

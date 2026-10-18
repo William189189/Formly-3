@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Formly: fill in any form in seconds</title>
+  <meta name="description" content="Formly is an AI Chrome extension that fills in application forms from your profile and documents, and learns from every form you submit." />
+  <style>
+    :root { --blue: #1a73e8; --blue-dark: #1557b0; --ink: #1f2937; --muted: #5b6475; --bg: #f3f7ff; --card: #fff; --line: #dbe3f4; --purple: #7c3aed; }
+    * { box-sizing: border-box; }
+    body { margin: 0; font: 16px/1.6 system-ui, -apple-system, "Segoe UI", sans-serif; color: var(--ink); background: var(--bg); }
+    a { color: var(--blue); }
+    .wrap { max-width: 1040px; margin: 0 auto; padding: 0 20px; }
+    header { padding: 22px 0; display: flex; justify-content: space-between; align-items: center; }
+    .logo { font-weight: 800; font-size: 24px; color: var(--blue); letter-spacing: -0.5px; text-decoration: none; }
+    nav a { margin-left: 18px; color: var(--muted); text-decoration: none; font-weight: 600; font-size: 15px; }
+    .hero { display: grid; grid-template-columns: 1.05fr 1fr; gap: 40px; align-items: center; padding: 40px 0 56px; }
+    h1 { font-size: clamp(34px, 5vw, 52px); line-height: 1.08; letter-spacing: -1.2px; margin: 0 0 16px; }
+    h1 span { color: var(--blue); }
+    .lead { font-size: 19px; color: var(--muted); margin: 0 0 26px; }
+    .btns { display: flex; gap: 12px; flex-wrap: wrap; }
+    .btn { display: inline-block; padding: 13px 22px; border-radius: 10px; font-weight: 700; text-decoration: none; }
+    .btn.primary { background: var(--blue); color: #fff; box-shadow: 0 8px 22px rgba(26,115,232,.3); }
+    .btn.primary:hover { background: var(--blue-dark); }
+    .btn.ghost { background: #dde7fb; color: #1a3e8f; }
+    .shot { width: 100%; border-radius: 14px; border: 1px solid var(--line); box-shadow: 0 18px 50px rgba(17,24,39,.12); background: #fff; display: block; }
+    section { padding: 48px 0; }
+    h2 { font-size: 30px; letter-spacing: -0.6px; margin: 0 0 8px; }
+    .sub { color: var(--muted); margin: 0 0 28px; }
+    .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+    .card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 22px; }
+    .card .num { display: inline-flex; width: 30px; height: 30px; border-radius: 50%; align-items: center; justify-content: center; background: var(--blue); color: #fff; font-weight: 700; margin-bottom: 10px; }
+    .card h3 { margin: 0 0 6px; font-size: 18px; }
+    .card p { margin: 0; color: var(--muted); font-size: 15px; }
+    .features { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+    .feature .icon { font-size: 26px; }
+    .split { display: grid; grid-template-columns: 1fr 1fr; gap: 36px; align-items: center; }
+    .safety li { margin-bottom: 10px; }
+    .tag { display: inline-block; background: #f3ecff; color: #6d28d9; border-radius: 999px; padding: 2px 10px; font-size: 13px; font-weight: 700; margin-bottom: 10px; }
+    ol.install { padding-left: 22px; }
+    ol.install li { margin-bottom: 8px; }
+    code { background: #e8eefc; padding: 1px 6px; border-radius: 5px; font-size: 14px; }
+    footer { padding: 36px 0 50px; color: var(--muted); font-size: 14px; border-top: 1px solid var(--line); margin-top: 20px; }
+    @media (max-width: 820px) {
+      .hero, .split { grid-template-columns: 1fr; }
+      .steps, .features { grid-template-columns: 1fr; }
+      nav { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <a class="logo" href="#">✨ Formly</a>
+      <nav>
+        <a href="#how">How it works</a>
+        <a href="#safety">Safety</a>
+        <a href="#install">Install</a>
+        <a href="https://github.com/William189189/Formly-3">GitHub</a>
+      </nav>
+    </header>
+
+    <div class="hero">
+      <div>
+        <h1>Fill in any form <span>in seconds.</span></h1>
+        <p class="lead">Formly is an AI Chrome extension for students. One click fills club sign-ups, event registrations and applications, including the "Why do you want to join?" answers. And it learns something new every time you submit.</p>
+        <div class="btns">
+          <a class="btn primary" href="https://github.com/William189189/Formly-3/archive/refs/heads/main.zip">⬇️ Download Formly</a>
+          <a class="btn ghost" href="https://github.com/William189189/Formly-3">View on GitHub</a>
+        </div>
+      </div>
+      <img class="shot" src="images/form-filled.png" alt="A sign-up form filled in by Formly, with filled boxes outlined in blue" />
+    </div>
+  </div>
+
+  <section id="how">
+    <div class="wrap">
+      <h2>How it works</h2>
+      <p class="sub">Three steps. You stay in control the whole time.</p>
+      <div class="steps">
+        <div class="card"><div class="num">1</div><h3>Tell Formly about you</h3><p>Fill in your profile, or upload your resume or LinkedIn PDF and let the AI fill it for you.</p></div>
+        <div class="card"><div class="num">2</div><h3>Press ✨ on any form</h3><p>Formly reads every question, finds the right facts and writes long answers from your real experience.</p></div>
+        <div class="card"><div class="num">3</div><h3>Check and submit</h3><p>Blue boxes are filled, orange ones are for you. Formly never presses Submit for you.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap split">
+      <div>
+        <span class="tag">🧠 Learns as you go</span>
+        <h2>Type it once. Never again.</h2>
+        <p class="sub">Form A asks for your Telegram username and Formly doesn't know it. You type it and press Submit. Formly saves it into the <b>Contact</b> section of your profile. On Form B, it's filled for you.</p>
+        <p class="sub">Learned boxes are tagged, show which website they came from, and can be edited or deleted any time.</p>
+      </div>
+      <img class="shot" src="images/learned.png" alt="Formly message: saved to your profile, Telegram username (Contact)" />
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <h2>Everything in one place</h2>
+      <p class="sub">A full profile page that you control.</p>
+      <div class="features">
+        <div class="card feature"><div class="icon">👤</div><h3>Your profile, your way</h3><p>Sections for personal, contact, education and more. Add your own boxes, delete any box.</p></div>
+        <div class="card feature"><div class="icon">📄</div><h3>Upload PDF or Word</h3><p>Resume, LinkedIn "Save to PDF", personal statements. Read on your computer, searched for the best parts.</p></div>
+        <div class="card feature"><div class="icon">🎯</div><h3>Shows up only on forms</h3><p>The button appears on real forms, not on Google Docs, Gmail or search pages. Switch it off any time.</p></div>
+      </div>
+      <p style="margin-top:26px"><img class="shot" src="images/profile.png" alt="The My Formly profile page" /></p>
+    </div>
+  </section>
+
+  <section id="safety">
+    <div class="wrap split">
+      <div>
+        <span class="tag">🛡️ Responsible AI</span>
+        <h2>Built to be careful</h2>
+        <ul class="safety">
+          <li><b>Never presses Submit.</b> You always review first.</li>
+          <li><b>No made-up facts.</b> The AI may only use your profile and documents. Guessed facts from resumes are thrown away by code.</li>
+          <li><b>Hands off secrets.</b> Password boxes are never read. NRIC, passport, bank and card answers are never learned.</li>
+          <li><b>Consent is yours.</b> "I agree" boxes are left for you to tick.</li>
+          <li><b>Never overwrites</b> what you already saved, and learning can be switched off.</li>
+          <li><b>Stored on your computer.</b> Data only goes to the AI provider you choose.</li>
+        </ul>
+        <p><a href="https://github.com/William189189/Formly-3#7-ai-safety--limitations">Read the full risks, tests and limitations →</a></p>
+      </div>
+      <img class="shot" src="images/popup.png" alt="Formly popup showing what it just learned" style="max-width:340px;justify-self:center" />
+    </div>
+  </section>
+
+  <section id="install">
+    <div class="wrap">
+      <h2>Install Formly</h2>
+      <p class="sub">Free, open-source, takes about 3 minutes. You need Chrome and an OpenAI-compatible API key.</p>
+      <div class="card">
+        <ol class="install">
+          <li><a href="https://github.com/William189189/Formly-3/archive/refs/heads/main.zip">Download Formly</a> and unzip it.</li>
+          <li>In Chrome, open <code>chrome://extensions</code> and turn on <b>Developer mode</b>.</li>
+          <li>Click <b>Load unpacked</b> and choose the <code>client</code> folder.</li>
+          <li>Pin Formly from the 🧩 menu, click it → <b>My Profile &amp; Settings</b> → <b>Settings</b>, paste your API key and press <b>Test key</b>.</li>
+          <li>Fill in your profile (or upload your resume), open any form, and press <b>✨ Fill with Formly</b>.</li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <div class="wrap">
+    <footer>
+      Built by William Koh for the AI Lodge Hackathon 2026 · <a href="https://github.com/William189189/Formly-3">Source code on GitHub</a>
+    </footer>
+  </div>
+</body>
+</html>

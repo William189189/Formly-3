@@ -8,16 +8,31 @@
 //   STEP 3  Put the answers back into the form     -> fillFields()
 //
 // It NEVER presses Submit. You always check and submit yourself.
+//
+//   STEP 4  LEARN: when you press Submit, notice what YOU typed
+//           (e.g. a Telegram username) and save it to your profile -> learnFromPage()
 // =============================================================
 
 (() => {
   if (window.__formlyLoaded) return; // don't load twice
   window.__formlyLoaded = true;
 
-  const MIN_FIELDS = 2; // show the button only if the page has at least this many boxes
+  const MIN_FIELDS = 3; // a page needs at least this many questions to count as a form
 
   // id ("f1", "f2"...) -> { the real page element(s), question, type, options }
   let fieldMap = new Map();
+
+  // ---------- for learning ----------
+  const filledValues = new Map(); // what Formly typed: "question|type" -> "answer"
+  let usedOnPage = false; // did Formly fill this page?
+  let autoLearn = true; // the "learn when I press Submit" setting
+
+  // Never learn from these questions (secrets)
+  const SENSITIVE_RE =
+    /\b(nric|fin (no|number)|passport|password|passcode|pin code|cvv|cvc|card number|credit card|debit card|bank account|account number|iban|swift code|otp|one[- ]time)\b/i;
+  // Never learn tick boxes like "I agree to the terms"
+  const CONSENT_RE =
+    /\b(i agree|i consent|i declare|i confirm|i acknowledge|terms (and|&) conditions|terms of (use|service)|declaration|pdpa|privacy policy|code of conduct)\b/i;
 
   // ---------- little helpers ----------
   const clean = (t) => (t || '').replace(/\s+/g, ' ').trim();
@@ -255,9 +270,13 @@
         return;
       }
 
+      const remember = (text) => filledValues.set(f.question + '|' + f.type, text);
+
       try {
         if (f.kind === 'text') {
-          setValue(f.el, Array.isArray(value) ? value.join(', ') : String(value));
+          const text = Array.isArray(value) ? value.join(', ') : String(value);
+          setValue(f.el, text);
+          remember(text);
           filled++;
           f.el.classList.add('formly-filled');
         } else if (f.kind === 'select') {
@@ -265,18 +284,22 @@
           const i = bestMatch(opts.map((o) => o.text), String(value));
           if (i === -1) return outline?.classList.add('formly-empty');
           setValue(f.el, opts[i].value);
+          remember(clean(opts[i].text));
           filled++;
           f.el.classList.add('formly-filled');
         } else {
           let wanted = Array.isArray(value) ? value : [value];
           if (!f.multi) wanted = wanted.slice(0, 1); // radio = only one answer
           let any = false;
+          const picked = [];
           wanted.forEach((w) => {
             const i = bestMatch(f.options, String(w));
             if (i === -1) return;
             if (!isChecked(f.els[i])) f.els[i].click();
+            picked.push(i);
             any = true;
           });
+          if (any) remember(picked.sort((x, y) => x - y).map((i) => f.options[i]).join(', '));
           outline?.classList.add(any ? 'formly-filled' : 'formly-empty');
           if (any) filled++;
         }
@@ -289,10 +312,89 @@
   }
 
   // =============================================================
+  // STEP 4 — LEARN FROM WHAT YOU TYPED
+  // =============================================================
+
+  // What is in a box right now?
+  function readValue(f) {
+    if (f.kind === 'text') return f.el.value.trim();
+    if (f.kind === 'select') {
+      const o = f.el.selectedOptions?.[0];
+      return o && f.el.value ? clean(o.text) : '';
+    }
+    return f.els
+      .map((e, i) => (isChecked(e) ? f.options[i] : null))
+      .filter(Boolean)
+      .join(', ');
+  }
+
+  // Make a list of answers worth learning.
+  // onlyChanged = true -> skip answers Formly filled that you didn't change
+  function gatherAnswers(onlyChanged) {
+    collectFields();
+    const items = [];
+    fieldMap.forEach((f) => {
+      if (f.type === 'long_text') return; // essays are one-off, don't learn them
+      if (SENSITIVE_RE.test(f.question)) return; // never learn secrets
+      if (CONSENT_RE.test(f.question) || (f.options || []).some((o) => CONSENT_RE.test(o))) return;
+      const answer = readValue(f);
+      if (!answer || answer.length > 200) return;
+      if (onlyChanged && filledValues.get(f.question + '|' + f.type) === answer) return;
+      items.push({ question: f.question, answer });
+    });
+    return items;
+  }
+
+  let lastLearn = 0;
+  async function learnFromPage(onlyChanged, quiet) {
+    if (Date.now() - lastLearn < 3000) return; // don't run twice in a row
+    lastLearn = Date.now();
+
+    const items = gatherAnswers(onlyChanged);
+    if (!items.length) {
+      if (!quiet) toast('Nothing new to remember on this page.');
+      return;
+    }
+    try {
+      const res = await chrome.runtime.sendMessage({ type: 'FORMLY_LEARN', site: location.hostname, items });
+      if (res?.ok && res.saved?.length) {
+        const list = res.saved.map((s) => `${s.label} (${s.section})`).join(', ');
+        toast(`🧠 Saved to your profile: ${list}. Formly will fill it next time. You can edit or delete it in My Profile.`, 10000);
+      } else if (!quiet) {
+        toast(res?.ok ? 'Nothing new: Formly already knows these.' : '⚠️ ' + (res?.error || 'Could not learn.'));
+      }
+    } catch (e) {
+      if (!quiet) toast('⚠️ ' + e.message);
+    }
+  }
+
+  // When you press Submit / Next on a page Formly filled, look for new facts
+  const SUBMIT_WORDS = /^(submit|send|apply|register|sign up|next|continue|done|finish)\b/i;
+  document.addEventListener(
+    'click',
+    (e) => {
+      if (!usedOnPage || !autoLearn) return;
+      const b = e.target.closest?.('button, [role="button"], input[type="submit"]');
+      if (!b || b.closest('#formly-root')) return;
+      const label = clean(b.innerText || b.value || b.getAttribute('aria-label'));
+      if (SUBMIT_WORDS.test(label)) learnFromPage(true, true);
+    },
+    true
+  );
+  document.addEventListener(
+    'submit',
+    () => {
+      if (usedOnPage && autoLearn) learnFromPage(true, true);
+    },
+    true
+  );
+
+  // =============================================================
   // THE BUTTON
   // =============================================================
   let root, btn, toastEl, toastTimer, observer, checkTimer;
   let busy = false;
+  let enabled = false; // the ON/OFF switch
 
   function ensureUI() {
     if (root) return;
@@ -351,6 +453,7 @@
       }
 
       const filled = fillFields(res.answers); // STEP 3
+      usedOnPage = true;
       const left = fields.length - filled;
       toast(
         `✅ Filled ${filled} of ${fields.length} questions.` +
@@ -370,26 +473,93 @@
     }
   }
 
-  // Only show the button on pages that look like forms.
-  function countBoxes() {
-    return document.querySelectorAll(
-      'input:not([type=hidden]):not([type=submit]):not([type=button]):not([type=reset])' +
-        ':not([type=image]):not([type=file]):not([type=password]):not([type=search]),' +
-        'textarea, select, [role=radio], [role=checkbox]'
-    ).length;
+  // =============================================================
+  // ONLY SHOW THE BUTTON ON REAL FORMS
+  // =============================================================
+
+  // Websites that are always forms
+  const FORM_SITES =
+    /docs\.google\.com\/forms|forms\.gle|forms\.office\.com|typeform\.com|jotform\.com|tally\.so|surveymonkey\.com|airtable\.com\/(app|shr)|formstack\.com|greenhouse\.io|lever\.co|myworkdayjobs\.com/i;
+
+  // Apps that have boxes on screen but are NOT forms
+  const NOT_FORM_SITES =
+    /docs\.google\.com\/(document|spreadsheets|presentation|drawings)|drive\.google\.com|mail\.google\.com|calendar\.google\.com|notion\.so|canva\.com|figma\.com|youtube\.com|whatsapp\.com|telegram\.org|chatgpt\.com|claude\.ai/i;
+
+  function looksLikeForm() {
+    // Building your own Google Form (edit mode)? Not a form to fill.
+    if (/docs\.google\.com\/forms\/.*\/edit/i.test(location.href)) return false;
+
+    // Known form websites: always yes
+    if (FORM_SITES.test(location.href)) return true;
+
+    // Docs, Sheets, Gmail and other apps: never
+    if (NOT_FORM_SITES.test(location.href)) return false;
+
+    // Login pages have a password box: not the kind of form Formly fills
+    if (document.querySelector('input[type="password"]')) return false;
+
+    // Count the question boxes you can actually see
+    let questions = 0;
+    document.querySelectorAll('input, textarea, select').forEach((el) => {
+      if (el.closest('#formly-root')) return;
+      const type = (el.getAttribute('type') || 'text').toLowerCase();
+      if (el.tagName === 'INPUT' && !['text', 'email', 'tel', 'url', 'number', 'date'].includes(type)) return;
+      if (el.disabled || el.readOnly || !isVisible(el)) return;
+      // skip search bars
+      const hint = [el.name, el.id, el.placeholder, el.getAttribute('aria-label')].join(' ');
+      if (type === 'search' || /search|query/i.test(hint) || el.closest('[role="search"]')) return;
+      // skip boxes inside toolbars and menus (like the font size box)
+      if (el.closest('[role="toolbar"], [role="menubar"], [role="menu"], [role="combobox"], nav, header')) return;
+      questions++;
+    });
+
+    // Each group of radio buttons counts as 1 question
+    const radioGroups = new Set(
+      [...document.querySelectorAll('input[type="radio"]')].filter(isVisible).map((r) => r.name || r)
+    );
+    questions += radioGroups.size + document.querySelectorAll('[role="radiogroup"]').length;
+
+    return questions >= MIN_FIELDS;
   }
+
   function maybeShowButton() {
     clearTimeout(checkTimer);
     checkTimer = setTimeout(() => {
-      if (!root && countBoxes() >= MIN_FIELDS) ensureUI();
+      if (enabled && !root && looksLikeForm()) ensureUI();
     }, 800);
   }
   observer = new MutationObserver(maybeShowButton); // for forms that load late
   observer.observe(document.documentElement, { childList: true, subtree: true });
-  maybeShowButton();
 
-  // The popup's "Fill this page" button also works
-  chrome.runtime.onMessage.addListener((msg) => {
+  // ===== ON / OFF SWITCH =====
+  // Take the button off the page
+  function removeUI() {
+    if (busy) return; // don't hide while Formly is working
+    root?.remove();
+    root = btn = toastEl = null;
+  }
+
+  // 1. When the page opens: is the switch ON or OFF?
+  chrome.storage.local.get(['enabled', 'autoLearn']).then((data) => {
+    enabled = data.enabled !== false; // ON unless you turned it OFF
+    autoLearn = data.autoLearn !== false;
+    maybeShowButton();
+  });
+
+  // 2. When you flip the switch: show or hide the button straight away
+  chrome.storage.onChanged.addListener((changes, area) => {
+    if (area !== 'local') return;
+    if (changes.autoLearn) autoLearn = changes.autoLearn.newValue !== false;
+    if (!changes.enabled) return;
+    enabled = changes.enabled.newValue !== false;
+    if (enabled) maybeShowButton();
+    else removeUI();
+  });
+
+  // Buttons in the popup: "Fill this page now" and "Remember my answers"
+  chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
     if (msg?.type === 'FORMLY_FILL') runFill();
+    if (msg?.type === 'FORMLY_LEARN_NOW') learnFromPage(false, false);
+    sendResponse({ ok: true });
   });
 })();

@@ -1,0 +1,69 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Formly</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      width: 320px;
+      margin: 0;
+      padding: 16px;
+      font: 13px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif;
+      color: #1f2937;
+      background: #f3f7ff;
+    }
+    h1 { margin: 0 0 2px; font-size: 26px; color: #1a73e8; letter-spacing: -0.5px; }
+    .tag { margin: 0 0 14px; color: #4b5563; }
+    button {
+      width: 100%;
+      padding: 10px;
+      border: none;
+      border-radius: 8px;
+      font: 600 13px system-ui, sans-serif;
+      cursor: pointer;
+      margin-top: 8px;
+    }
+    .primary { background: #1a73e8; color: #fff; font-size: 14px; padding: 12px; }
+    .primary:hover { background: #1557b0; }
+    .ghost { background: #dde7fb; color: #1a3e8f; }
+    .card { background: #fff; border: 1px solid #c9d6f2; border-radius: 8px; padding: 10px 12px; margin-top: 10px; }
+    .warn { background: #fff7e6; border-color: #f5c46b; }
+    .learned { background: #f3ecff; border-color: #c9b2f5; }
+    .learned button { margin-top: 6px; padding: 7px; }
+    .switch-row { display: flex; justify-content: space-between; align-items: center; }
+    .switch-row input { width: 18px; height: 18px; margin: 0; }
+    #status { min-height: 18px; margin-top: 10px; color: #374151; }
+    .small { margin-top: 10px; color: #6b7280; font-size: 12px; }
+  </style>
+</head>
+<body>
+  <h1>Formly</h1>
+  <p class="tag">Fill in any application form in seconds.</p>
+
+  <!-- Only shows if your key or profile is missing -->
+  <div id="setup" class="card warn" hidden>
+    👋 <span id="setupText"></span>
+  </div>
+
+  <button id="fill" class="primary">✨ Fill this page now</button>
+  <button id="openProfile" class="ghost">👤 My Profile & Settings</button>
+
+  <!-- Only shows when Formly just learned something new -->
+  <div id="learnedBox" class="card learned" hidden>
+    🧠 <b>Just learned</b> and saved to your profile:
+    <div id="learnedList"></div>
+    <button id="review" class="ghost">See it in My Profile</button>
+  </div>
+
+  <div class="card switch-row">
+    <label for="enabled">Show ✨ button on pages</label>
+    <input type="checkbox" id="enabled" />
+  </div>
+
+  <div id="status"></div>
+  <p class="small">Formly never presses Submit. You always check and submit.</p>
+
+  <script src="popup.js"></script>
+</body>
+</html>

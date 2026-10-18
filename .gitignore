@@ -1,0 +1,9 @@
+# Secrets: never upload these
+server/config.env
+*.env
+.env*
+
+# Local backups and system files
+backup-*/
+.DS_Store
+node_modules/
