@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Join Formly: 3 free forms</title>
+  <meta name="description" content="Sign up for the Formly beta. An AI Chrome extension that fills in application forms in seconds." />
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; font: 16px/1.55 system-ui, -apple-system, "Segoe UI", sans-serif; color: #1f2937; background: #f3f7ff; }
+    .wrap { max-width: 460px; margin: 0 auto; padding: 32px 16px 48px; }
+    .logo { font-weight: 800; font-size: 26px; color: #1a73e8; letter-spacing: -0.5px; }
+    h1 { font-size: 30px; line-height: 1.15; letter-spacing: -0.8px; margin: 14px 0 8px; }
+    h1 span { color: #1a73e8; }
+    .lead { color: #5b6475; margin: 0 0 20px; }
+    .card { background: #fff; border: 1px solid #dbe3f4; border-radius: 16px; padding: 20px; box-shadow: 0 10px 30px rgba(17, 24, 39, 0.06); }
+    .perks { list-style: none; padding: 0; margin: 0 0 6px; }
+    .perks li { margin: 4px 0; }
+    label.field { display: block; font-weight: 600; font-size: 14px; margin: 14px 0 6px; color: #374151; }
+    input[type=text], input[type=email] { width: 100%; padding: 13px 14px; border: 1px solid #c9d6f2; border-radius: 10px; font: inherit; font-size: 16px; background: #fff; }
+    input:focus { outline: 2px solid #1a73e8; outline-offset: 1px; }
+    .consent { display: flex; gap: 10px; align-items: flex-start; margin: 16px 0 4px; font-size: 14px; color: #374151; }
+    .consent input { width: 20px; height: 20px; margin-top: 1px; flex: none; }
+    .btn { display: block; width: 100%; margin-top: 16px; padding: 15px; border: none; border-radius: 12px; font: 700 17px system-ui, sans-serif; cursor: pointer; background: #1a73e8; color: #fff; }
+    .btn:disabled { opacity: 0.7; }
+    .msg { min-height: 20px; margin-top: 10px; color: #b42318; font-size: 14px; }
+    .done { text-align: center; }
+    .done .big { font-size: 54px; line-height: 1; margin: 6px 0 10px; }
+    .done h2 { margin: 0 0 8px; }
+    .done p { color: #5b6475; margin: 6px 0; }
+    .note { background: #eef4ff; border-radius: 12px; padding: 12px 14px; margin-top: 14px; font-size: 14px; color: #1a3e8f; text-align: left; }
+    .small { color: #6b7280; font-size: 13px; margin-top: 18px; text-align: center; }
+    a { color: #1a73e8; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="logo">✨ Formly</div>
+    <h1>Fill in any application form <span>in seconds</span>.</h1>
+    <p class="lead">An AI Chrome extension that fills internship, CCA and job forms from your resume, and learns from every form you submit.</p>
+
+    <div class="card" id="signupCard">
+      <ul class="perks">
+        <li>🎁 <b>3 free forms</b></li>
+        <li>🔒 Your profile stays on your own computer</li>
+        <li>💻 Works in Chrome on your laptop</li>
+      </ul>
+      <form id="form" novalidate>
+        <label class="field" for="email">Email</label>
+        <input id="email" type="email" placeholder="you@example.com" autocomplete="email" inputmode="email" required />
+        <label class="field" for="telegram">Telegram username</label>
+        <input id="telegram" type="text" placeholder="@yourname" autocomplete="off" autocapitalize="off" required />
+        <label class="consent">
+          <input id="consent" type="checkbox" />
+          <span>I agree that Formly stores my email, Telegram username and how many forms I fill, to run my account and contact me about Formly. <a href="privacy.html" target="_blank">Privacy policy</a></span>
+        </label>
+        <button class="btn" id="btn" type="submit">Get my 3 free forms</button>
+        <div class="msg" id="msg"></div>
+      </form>
+    </div>
+
+    <div class="card done" id="doneCard" hidden>
+      <div class="big">🎉</div>
+      <h2 id="doneTitle">You're in!</h2>
+      <p>Your account is ready with <b>3 free forms</b>.</p>
+      <div class="note">
+        <b>Next:</b> we'll send you the install link on Telegram.<br />
+        When you install Formly on your laptop, sign in with <b>this same email</b> and your free forms will be waiting.
+      </div>
+    </div>
+
+    <p class="small">Made in Singapore 🇸🇬 · <a href="index.html">What is Formly?</a></p>
+  </div>
+
+  <script>
+    const SERVER = 'https://qzzkbqtykrsvfsfhxxgd.supabase.co/functions/v1/formly';
+    const $ = (id) => document.getElementById(id);
+
+    $('form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = $('email').value.trim();
+      const telegram = $('telegram').value.trim();
+      $('msg').textContent = '';
+      if (!email || !telegram) return ($('msg').textContent = 'Please fill in your email and Telegram username.');
+      if (!$('consent').checked) return ($('msg').textContent = 'Please tick the box to agree.');
+
+      $('btn').disabled = true;
+      $('btn').textContent = 'Signing you up…';
+      try {
+        const res = await fetch(SERVER, {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ action: 'signup', email, telegram, consent: true }),
+        });
+        const data = await res.json().catch(() => ({}));
+        if (!data.ok) throw new Error(data.error || 'Something went wrong. Please try again.');
+        $('doneTitle').textContent = `You're in, ${data.account?.telegram || 'friend'}!`;
+        $('signupCard').hidden = true;
+        $('doneCard').hidden = false;
+      } catch (err) {
+        $('msg').textContent = '⚠️ ' + (err.message === 'Failed to fetch' ? 'No internet connection. Please try again.' : err.message);
+      } finally {
+        $('btn').disabled = false;
+        $('btn').textContent = 'Get my 3 free forms';
+      }
+    });
+  </script>
+</body>
+</html>
