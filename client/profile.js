@@ -3,7 +3,7 @@
 // The "My Formly" page.
 //   - My Profile tab: your details in neat boxes
 //   - Documents tab:  your resume and other writing
-//   - Settings tab:   your API key and AI model
+//   - Settings tab:   your account, sign out, learning on/off
 //
 // When you press Save, Formly also writes your details as plain
 // text into "profile", which is what background.js sends to the AI.
@@ -467,26 +467,43 @@ $('autoLearn').addEventListener('change', (e) => {
   $('settingsMsg').textContent = e.target.checked ? '✅ Learning ON' : '⏸️ Learning OFF';
 });
 
-$('saveSettings').addEventListener('click', async () => {
-  await chrome.storage.local.set({
-    apiKey: $('apiKey').value.trim(),
-    model: $('model').value.trim(),
-  });
-  $('settingsMsg').textContent = '✅ Saved!';
-});
+// Your account: email, Telegram, plan
+function drawAccount(account, signedIn) {
+  if (!signedIn) {
+    $('accountInfo').innerHTML = 'You are not signed in. <a href="welcome.html">Create your free account</a>';
+    $('signOut').hidden = true;
+    return;
+  }
+  $('signOut').hidden = false;
+  if (!account) return;
+  const plan =
+    account.status === 'blocked'
+      ? '⏸️ Paused'
+      : account.unlimited
+      ? '✨ Unlimited forms'
+      : `${account.formsLeft} of ${account.freeForms} free forms left`;
+  $('accountInfo').innerHTML = `
+    <div><b>Email:</b> ${esc(account.email || '')}</div>
+    <div><b>Telegram:</b> ${esc(account.telegram || '')}</div>
+    <div><b>Plan:</b> ${esc(plan)}</div>`;
+}
 
-$('testKey').addEventListener('click', async () => {
-  const apiKey = $('apiKey').value.trim();
-  if (!apiKey) return ($('settingsMsg').textContent = 'Paste your API key first.');
-  $('settingsMsg').textContent = 'Testing…';
-  const res = await chrome.runtime.sendMessage({ type: 'FORMLY_TEST_KEY', apiKey, model: $('model').value.trim() });
-  $('settingsMsg').textContent = res?.ok ? '✅ Your key works! Press Save settings.' : '⚠️ ' + (res?.error || 'Key test failed.');
+$('signOut').addEventListener('click', async () => {
+  const ok = await openModal({
+    title: 'Sign out of Formly?',
+    text: 'Your profile and documents stay on this computer. Sign in again any time with the same email.',
+    okText: 'Sign out',
+  });
+  if (!ok) return;
+  await chrome.runtime.sendMessage({ type: 'FORMLY_SIGNOUT' });
+  drawAccount(null, false);
+  $('settingsMsg').textContent = 'Signed out.';
 });
 
 // =============================================================
 // START: load what you saved before
 // =============================================================
-chrome.storage.local.get(['profileData', 'profile', 'apiKey', 'model', 'docs', 'autoLearn']).then((saved) => {
+chrome.storage.local.get(['profileData', 'profile', 'docs', 'autoLearn', 'token', 'account']).then(async (saved) => {
   let data = saved.profileData;
 
   // First time here? Put your old profile text into "Anything else"
@@ -502,8 +519,13 @@ chrome.storage.local.get(['profileData', 'profile', 'apiKey', 'model', 'docs', '
   drawProfile(data);
   docs = saved.docs || [];
   drawDocs();
-  $('apiKey').value = saved.apiKey || '';
-  $('model').value = saved.model || 'claude-haiku-4-5-20251001';
+  drawAccount(saved.account, !!saved.token);
+  if (saved.token) {
+    chrome.runtime.sendMessage({ type: 'FORMLY_ME' }).then((res) => {
+      if (res?.ok) drawAccount(res.account, true);
+      else if (res?.code === 'SIGNED_OUT') drawAccount(null, false);
+    });
+  }
   $('autoLearn').checked = saved.autoLearn !== false;
   showTab(location.hash.slice(1));
 });

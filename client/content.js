@@ -445,20 +445,24 @@
         intro: short(document.body?.innerText, 1200), // helps the AI tailor essays
       };
 
-      // background.js builds the prompt, calls the AI, and splits the answers
+      // background.js asks the Formly server, which checks your account and asks the AI
       const res = await chrome.runtime.sendMessage({ type: 'FORMLY_ANSWER', page, fields });
       if (!res?.ok) {
-        toast('⚠️ ' + (res?.error || 'Something went wrong.'), 12000);
+        const icon = res?.code === 'LIMIT' ? '🎉 ' : '⚠️ ';
+        const more = ['LIMIT', 'SIGNED_OUT', 'PAUSED'].includes(res?.code) ? ' Click the Formly icon for details.' : '';
+        toast(icon + (res?.error || 'Something went wrong.') + more, 15000);
         return;
       }
 
       const filled = fillFields(res.answers); // STEP 3
       usedOnPage = true;
       const left = fields.length - filled;
+      const formsLeft = res.account?.formsLeft;
       toast(
         `✅ Filled ${filled} of ${fields.length} questions.` +
           (left ? ` ${left} left for you (orange boxes).` : '') +
-          ' Check everything, then press Submit yourself.',
+          ' Check everything, then press Submit yourself.' +
+          (typeof formsLeft === 'number' ? ` (${formsLeft} free form${formsLeft === 1 ? '' : 's'} left)` : ''),
         15000
       );
     } catch (e) {

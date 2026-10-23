@@ -1,10 +1,14 @@
 {
   "manifest_version": 3,
   "name": "Formly",
-  "version": "0.2.0",
-  "description": "Fill in any application form in seconds.",
-  "permissions": ["storage"],
-  "host_permissions": ["https://api.apiyi.com/*"],
+  "version": "0.3.0",
+  "description": "Fill in any application form in seconds with AI. Learns from every form you submit.",
+  "permissions": [
+    "storage"
+  ],
+  "host_permissions": [
+    "https://*.supabase.co/*"
+  ],
   "action": {
     "default_title": "Formly",
     "default_popup": "popup.html"
@@ -18,9 +22,15 @@
   },
   "content_scripts": [
     {
-      "matches": ["<all_urls>"],
-      "js": ["content.js"],
-      "css": ["content.css"],
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": [
+        "content.js"
+      ],
+      "css": [
+        "content.css"
+      ],
       "run_at": "document_idle"
     }
   ]

@@ -1,0 +1,72 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Welcome to Formly</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; font: 15px/1.55 system-ui, -apple-system, "Segoe UI", sans-serif; color: #1f2937; background: #f3f7ff; }
+    .wrap { max-width: 480px; margin: 0 auto; padding: 48px 16px; }
+    h1 { margin: 0; font-size: 34px; color: #1a73e8; letter-spacing: -0.8px; }
+    .lead { color: #5b6475; margin: 4px 0 22px; }
+    .card { background: #fff; border: 1px solid #dbe3f4; border-radius: 14px; padding: 22px; box-shadow: 0 10px 30px rgba(17, 24, 39, 0.06); }
+    h2 { margin: 0 0 4px; font-size: 20px; }
+    .perks { color: #5b6475; margin: 0 0 16px; }
+    label span { display: block; font-weight: 600; font-size: 13px; margin: 12px 0 4px; color: #374151; }
+    input[type=text], input[type=email] { width: 100%; padding: 10px 12px; border: 1px solid #c9d6f2; border-radius: 9px; font: inherit; }
+    input:focus { outline: 2px solid #1a73e8; outline-offset: 1px; }
+    .hint { display: inline !important; margin: 0 !important; font-weight: 400; color: #6b7280; }
+    .consent { display: flex; gap: 10px; align-items: flex-start; margin: 16px 0 4px; font-size: 13.5px; color: #374151; }
+    .consent input { width: 18px; height: 18px; margin-top: 2px; flex: none; }
+    .btn { display: block; width: 100%; margin-top: 16px; padding: 12px; border: none; border-radius: 10px; font: 700 15px system-ui, sans-serif; cursor: pointer; background: #1a73e8; color: #fff; }
+    .btn:hover { background: #1557b0; }
+    .btn:disabled { opacity: 0.7; cursor: progress; }
+    .btn.ghost { background: #dde7fb; color: #1a3e8f; }
+    .msg { min-height: 20px; margin-top: 10px; color: #b42318; font-size: 14px; }
+    .steps { padding-left: 20px; margin: 12px 0 0; }
+    .steps li { margin-bottom: 8px; }
+    .small { color: #6b7280; font-size: 12.5px; margin-top: 14px; }
+    a { color: #1a73e8; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>✨ Formly</h1>
+    <p class="lead">Fill in any application form in seconds.</p>
+
+    <!-- Step 1: create an account -->
+    <div class="card" id="signupCard">
+      <h2>Create your free account</h2>
+      <p class="perks">3 free forms · no API key needed · your profile stays on your computer</p>
+      <form id="signupForm">
+        <label><span>Email</span><input id="email" type="email" placeholder="you@example.com" autocomplete="email" required /></label>
+        <label><span>Telegram username <span class="hint">(so we can reach you about Formly)</span></span>
+          <input id="telegram" type="text" placeholder="@yourname" autocomplete="off" required />
+        </label>
+        <label class="consent">
+          <input id="consent" type="checkbox" />
+          <span style="display:inline;font-weight:400;margin:0">I agree that Formly stores my email, Telegram username and how many forms I fill, to run my account and contact me about Formly. <a href="privacy.html" target="_blank">Privacy policy</a></span>
+        </label>
+        <button class="btn" id="signupBtn" type="submit">Create my account</button>
+        <div class="msg" id="msg"></div>
+      </form>
+      <p class="small">Already have an account? Use the same email to sign back in.</p>
+    </div>
+
+    <!-- Step 2: you're in -->
+    <div class="card" id="doneCard" hidden>
+      <h2 id="doneTitle">🎉 You're in!</h2>
+      <p class="perks" id="donePlan"></p>
+      <ol class="steps">
+        <li><b>Set up your profile:</b> add your details, or upload your resume and let Formly fill it.</li>
+        <li><b>Pin Formly:</b> click the 🧩 puzzle icon in Chrome, then the 📌 next to Formly.</li>
+        <li><b>Open any form</b> and press <b>✨ Fill with Formly</b>.</li>
+      </ol>
+      <button class="btn" id="setupBtn">Set up my profile</button>
+    </div>
+  </div>
+
+  <script src="welcome.js"></script>
+</body>
+</html>

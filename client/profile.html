@@ -148,24 +148,10 @@
     <!-- ===== SETTINGS TAB ===== -->
     <section id="tab-settings" hidden>
       <div class="card">
-        <div class="grid">
-          <label class="wide">
-            <span>API key (stays on this computer)</span>
-            <input id="apiKey" type="password" placeholder="sk-..." autocomplete="off" />
-          </label>
-          <label>
-            <span>AI model</span>
-            <input id="model" type="text" list="models" />
-          </label>
-        </div>
-        <datalist id="models">
-          <option value="claude-haiku-4-5-20251001"></option>
-          <option value="gpt-4o-mini"></option>
-          <option value="gpt-5-mini"></option>
-        </datalist>
+        <h3 style="margin:0 0 8px">👤 Your Formly account</h3>
+        <div id="accountInfo" class="meta">Loading…</div>
         <div class="bar" style="position:static;background:none">
-          <button class="btn primary" id="saveSettings">Save settings</button>
-          <button class="btn ghost" id="testKey">Test key</button>
+          <button class="btn ghost" id="signOut">Sign out</button>
           <span class="msg" id="settingsMsg"></span>
         </div>
       </div>
@@ -173,6 +159,7 @@
         <label for="autoLearn">🧠 When I press Submit on a form Formly filled, save new things I typed to my profile</label>
         <input type="checkbox" id="autoLearn" />
       </div>
+      <p class="meta">Your profile and documents stay on this computer. Formly's server only keeps your email, Telegram username and how many forms you've filled. <a href="privacy.html" target="_blank">Privacy policy</a></p>
     </section>
   </div>
 

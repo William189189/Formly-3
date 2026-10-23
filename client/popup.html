@@ -35,13 +35,40 @@
     .switch-row input { width: 18px; height: 18px; margin: 0; }
     #status { min-height: 18px; margin-top: 10px; color: #374151; }
     .small { margin-top: 10px; color: #6b7280; font-size: 12px; }
+    .plan { margin: -4px 0 4px; color: #1a3e8f; font-weight: 600; }
+    .pro { background: #fff8e6; border-color: #f5c46b; }
+    .pro b { color: #92400e; }
+    .pro button { margin-top: 8px; padding: 9px; }
+    .paused { background: #fde8e8; border-color: #f5b5b5; color: #8a1c1c; }
   </style>
 </head>
 <body>
   <h1>Formly</h1>
   <p class="tag">Fill in any application form in seconds.</p>
 
-  <!-- Only shows if your key or profile is missing -->
+  <!-- Your plan, e.g. "2 of 3 free forms left" -->
+  <p class="plan" id="plan" hidden></p>
+
+  <!-- Not signed up yet -->
+  <div id="signup" class="card warn" hidden>
+    👋 <b>Create your free Formly account</b> to start. You get 3 free forms, no API key needed.
+    <button id="signupBtn" class="primary">Create free account</button>
+  </div>
+
+  <!-- Used all free forms -->
+  <div id="proBox" class="card pro" hidden>
+    🎉 <b>You've used all your free forms!</b><br />
+    <b>Formly Pro</b>: unlimited forms for <b id="proPrice">S$1.99/month</b>. Coming soon.
+    <button id="notifyPro" class="primary">Notify me when it's ready</button>
+    <div id="proThanks" hidden>✅ You're on the list! We'll message you on Telegram.</div>
+  </div>
+
+  <!-- Access paused by Formly -->
+  <div id="pausedBox" class="card paused" hidden>
+    ⏸️ Your Formly access has been paused. Message the Formly team on Telegram if you think this is a mistake.
+  </div>
+
+  <!-- Signed in but no profile yet -->
   <div id="setup" class="card warn" hidden>
     👋 <span id="setupText"></span>
   </div>
